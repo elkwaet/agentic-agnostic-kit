@@ -1,0 +1,41 @@
+{
+  "name": "agentic-agnostic-kit",
+  "version": "1.2.1",
+  "description": "Wizard interactif pour cabler un contrat de comportement global (AGENTS.md) et son injection au demarrage de session sur Claude Code, Antigravity CLI, Qwen-code et OpenCode, sans jamais ecraser silencieusement du contenu existant.",
+  "type": "module",
+  "bin": {
+    "agentic-agnostic": "bin/cli.js",
+    "agentic-agnostic-kit": "bin/cli.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.1"
+  },
+  "scripts": {
+    "test": "node --test test/core/*.test.js"
+  },
+  "license": "MIT",
+  "author": "elkwaet",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/elkwaet/agentic-bootstrap.git",
+    "directory": "package"
+  },
+  "keywords": [
+    "cli",
+    "ai-agent",
+    "claude-code",
+    "opencode",
+    "antigravity-cli",
+    "agents-md"
+  ],
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ]
+}

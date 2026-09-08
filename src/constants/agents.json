@@ -1,0 +1,73 @@
+{
+  "claude-code": {
+    "id": "claude-code",
+    "label": "Claude Code",
+    "detect": { "bin": "claude", "configDirHome": "~/.claude" },
+    "contractStubHome": "~/.claude/CLAUDE.md",
+    "configFileHome": "~/.claude/settings.json",
+    "configFormat": "json",
+    "injection": {
+      "mechanism": "hooks.SessionStart",
+      "matcher": "startup|resume|clear|compact",
+      "timeoutUnit": "seconds",
+      "defaultTimeout": 15
+    },
+    "precedence": { "projectOverridesHome": true, "mergeOnOverride": false },
+    "project": {
+      "configFileProject": ".claude/settings.json",
+      "contractStubProject": "CLAUDE.md"
+    }
+  },
+  "gemini-cli": {
+    "id": "gemini-cli",
+    "label": "Gemini CLI",
+    "deprecatedSince": "2026-06-18",
+    "removedFromKitSince": "2026-08-30",
+    "removedFromKitReason": "Officially discontinued (2026-06-18) and observed refusing auth in real-world use. Superseded by Antigravity CLI (id \"agy\") as the kit's sole Google/Gemini agent. Entry kept here (data only, not in any active agent list) so `uninstall` can still clean up hooks left by earlier kit versions.",
+    "detect": { "bin": "gemini", "configDirHome": "~/.gemini" },
+    "contractStubHome": "~/.gemini/GEMINI.md",
+    "configFileHome": "~/.gemini/settings.json",
+    "configFormat": "json",
+    "injection": {
+      "mechanism": "hooks.SessionStart",
+      "matcher": "startup|resume|clear",
+      "timeoutUnit": "seconds",
+      "defaultTimeout": null
+    },
+    "precedence": { "projectOverridesHome": true, "mergeOnOverride": false },
+    "project": {
+      "configFileProject": ".gemini/settings.json",
+      "contractStubProject": "GEMINI.md"
+    }
+  },
+  "agy": {
+    "id": "agy",
+    "label": "Antigravity CLI",
+    "detect": { "bin": "agy", "configDirHome": "~/.gemini" },
+    "contractStubHome": "~/.gemini/GEMINI.md",
+    "injection": { "mechanism": "native-instruction-file" }
+  },
+  "qwen-code": {
+    "id": "qwen-code",
+    "label": "Qwen-code",
+    "detect": { "bin": "qwen", "configDirHome": "~/.qwen" },
+    "contractStubHome": "~/.qwen/QWEN.md",
+    "configFileHome": "~/.qwen/settings.json",
+    "configFormat": "json",
+    "injection": {
+      "mechanism": "hooks.SessionStart",
+      "matcher": "startup|resume|clear",
+      "timeoutUnit": "milliseconds",
+      "defaultTimeout": 15000
+    },
+    "precedence": { "projectOverridesHome": "unknown-not-tested" }
+  },
+  "opencode": {
+    "id": "opencode",
+    "label": "OpenCode",
+    "detect": { "bin": "opencode", "configDirHome": "~/.config/opencode" },
+    "contractStubHome": "~/.config/opencode/AGENTS.md",
+    "injection": { "mechanism": "native-instruction-file" },
+    "project": { "contractStubProject": "AGENTS.md" }
+  }
+}
