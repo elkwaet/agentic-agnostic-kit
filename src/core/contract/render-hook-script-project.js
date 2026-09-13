@@ -3,13 +3,22 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TEMPLATE_PATH = path.join(
+const TEMPLATE_BASH_PATH = path.join(
   __dirname,
   "..",
   "..",
   "templates",
   "hooks",
   "session-start-contract.project.sh.tpl",
+);
+
+const TEMPLATE_NODE_PATH = path.join(
+  __dirname,
+  "..",
+  "..",
+  "templates",
+  "hooks",
+  "session-start-contract.project.js.tpl",
 );
 
 /**
@@ -19,6 +28,7 @@ const TEMPLATE_PATH = path.join(
  * oteli-mono-staging/.agents/hooks/session-start-contract.sh, generalise
  * (decouverte dynamique des skills, pas de logique produit en dur).
  */
-export async function renderProjectHookScript() {
-  return readFile(TEMPLATE_PATH, "utf8");
+export async function renderProjectHookScript(engine = "bash") {
+  const tplPath = engine === "node" ? TEMPLATE_NODE_PATH : TEMPLATE_BASH_PATH;
+  return readFile(tplPath, "utf8");
 }

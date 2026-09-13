@@ -32,10 +32,23 @@ async function dirExists(p) {
  * juste presence du binaire et/ou du dossier de config.
  */
 export async function detectAgent(agentMeta) {
-  const configDir = expandHome(agentMeta.detect.configDirHome);
+  if (!agentMeta.detect) {
+    return {
+      id: agentMeta.id,
+      label: agentMeta.label,
+      installed: false,
+      hasBin: false,
+      hasConfigDir: false,
+      configDir: null,
+    };
+  }
+
+  const configDir = agentMeta.detect.configDirHome ? expandHome(agentMeta.detect.configDirHome) : null;
+  const bin = agentMeta.detect.bin;
+  
   const [hasBin, hasConfigDir] = await Promise.all([
-    binOnPath(agentMeta.detect.bin),
-    dirExists(configDir),
+    bin ? binOnPath(bin) : Promise.resolve(false),
+    configDir ? dirExists(configDir) : Promise.resolve(false),
   ]);
   return {
     id: agentMeta.id,

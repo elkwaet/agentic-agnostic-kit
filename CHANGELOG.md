@@ -2,6 +2,19 @@
 
 Toutes les évolutions notables d'`agentic-agnostic-kit` sont consignées ici (format [Keep a Changelog](https://keepachangelog.com/), versioning [SemVer](https://semver.org/)).
 
+## [1.3.0] — 2026-09-13
+
+### Ajouté
+
+- Support natif des **Éditeurs IA** (Cursor, Windsurf, Cline, GitHub Copilot). Leurs stubs projets (`.cursorrules`, `.windsurfrules`, etc.) sont générés et pointent vers l'écosystème global `AGENTS.md`.
+- **Option Node.js pour le hook SessionStart**. Le wizard propose désormais le moteur Node.js (100% universel, sans dépendance) comme alternative portable au bash classique (exigeant `jq` et `awk`), débloquant le support sous Windows / Docker Alpine.
+- Intégration de Antigravity CLI (`agy`) au scope Projet (génération de `GEMINI.md`).
+
+### Corrigé
+
+- Changements pour assurer la compatibilité stricte `Node >= 18.0.0` (remplacement de `import ... with { type: 'json' }` par `fs.readFileSync`).
+- Centralisation sécurisée des hooks `graphify` (migration du dossier `.opencode/skills/graphify` vers `.agents/skills/graphify` avec backup).
+
 ## [1.2.1] — 2026-09-08
 
 ### Modifié

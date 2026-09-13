@@ -42,10 +42,18 @@
   },
   "agy": {
     "id": "agy",
-    "label": "Antigravity CLI",
-    "detect": { "bin": "agy", "configDirHome": "~/.gemini" },
+    "label": "Antigravity CLI (agy)",
+    "detect": {
+      "bin": "agy",
+      "configDirHome": "~/.gemini"
+    },
     "contractStubHome": "~/.gemini/GEMINI.md",
-    "injection": { "mechanism": "native-instruction-file" }
+    "injection": {
+      "mechanism": "native-instruction-file"
+    },
+    "project": {
+      "contractStubProject": "GEMINI.md"
+    }
   },
   "qwen-code": {
     "id": "qwen-code",
@@ -69,5 +77,33 @@
     "contractStubHome": "~/.config/opencode/AGENTS.md",
     "injection": { "mechanism": "native-instruction-file" },
     "project": { "contractStubProject": "AGENTS.md" }
+  },
+  "cursor": {
+    "id": "cursor",
+    "label": "Cursor (IDE)",
+    "detect": { "configDirHome": "~/.cursor" },
+    "injection": { "mechanism": "native-instruction-file" },
+    "project": { "contractStubProject": ".cursorrules" }
+  },
+  "windsurf": {
+    "id": "windsurf",
+    "label": "Windsurf (IDE)",
+    "detect": { "configDirHome": "~/.codeium/windsurf" },
+    "injection": { "mechanism": "native-instruction-file" },
+    "project": { "contractStubProject": ".windsurfrules" }
+  },
+  "cline": {
+    "id": "cline",
+    "label": "Cline / Roo-Code",
+    "detect": { "configDirHome": "~/.vscode" },
+    "injection": { "mechanism": "native-instruction-file" },
+    "project": { "contractStubProject": ".clinerules" }
+  },
+  "copilot": {
+    "id": "copilot",
+    "label": "GitHub Copilot",
+    "detect": { "configDirHome": "~/.vscode" },
+    "injection": { "mechanism": "native-instruction-file" },
+    "project": { "contractStubProject": ".github/copilot-instructions.md" }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "agentic-agnostic-kit",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Wizard interactif pour cabler un contrat de comportement global (AGENTS.md) et son injection au demarrage de session sur Claude Code, Antigravity CLI, Qwen-code et OpenCode, sans jamais ecraser silencieusement du contenu existant.",
   "type": "module",
   "bin": {
@@ -34,6 +34,7 @@
   "files": [
     "bin",
     "src",
+    "test",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"

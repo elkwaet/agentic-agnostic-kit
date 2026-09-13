@@ -1,5 +1,6 @@
 import path from "node:path";
-import agentsMeta from "../constants/agents.json" with { type: "json" };
+import { readFileSync } from "node:fs";
+const agentsMeta = JSON.parse(readFileSync(new URL("../constants/agents.json", import.meta.url), "utf-8"));
 import { expandHome } from "../core/paths.js";
 import { detectAllAgents } from "../core/detect-agents.js";
 import { computeOwnership } from "../core/fs-safety/ownership-marker.js";
@@ -10,10 +11,9 @@ import { detectHookTools, missingHookTools } from "../core/detect-hook-tools.js"
 // `uninstall` uniquement, jamais dans une liste active.
 const V01_AGENT_IDS = ["claude-code", "qwen-code"];
 const PROJECT_AGENT_IDS = ["claude-code"];
-// agy (Antigravity CLI) : scope Home uniquement, pas d'entree "project"
-// dans agents.json (precedence jamais verifiee) - cf. STUB_ONLY_PROJECT_AGENT_IDS.
-const STUB_ONLY_AGENT_IDS = ["opencode", "agy"];
-const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode"];
+// agy (Antigravity CLI) : Inclus en scope Home et Projet.
+const STUB_ONLY_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
+const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
 
 function agentDisplayLabel(agentMeta) {
   return agentMeta.deprecatedSince
@@ -29,7 +29,7 @@ async function printHookToolsStatus() {
     .join(", ");
   console.log(`Hook tools required (bash/awk/jq): ${status}`);
   if (missing.length > 0) {
-    console.log(`  -> ${missing.join(", ")} missing: the SessionStart hook will fail silently.`);
+    console.log(`  -> ${missing.join(", ")} missing: the Bash hook will fail. The Node.js hook fallback is available.`);
   }
 }
 

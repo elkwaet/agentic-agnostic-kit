@@ -6,6 +6,10 @@ an existing contract. It is based on extensive experimentation and empirical fin
 
 **WARNING: This is purely CLI-oriented / For terminal-based coding assistant platforms**.
 
+## Prerequisites
+
+- **Node.js**: Strictly requires `>= 18.0.0`. For optimal performance and compatibility, the latest LTS version (e.g. 20.x or 22.x) is strongly recommended.
+
 ## Installation
 
 The npm package is called `agentic-agnostic-kit`; the installed command is called `agentic-agnostic` (shortcut, the old name `agentic-agnostic-kit` remains available as an alias).

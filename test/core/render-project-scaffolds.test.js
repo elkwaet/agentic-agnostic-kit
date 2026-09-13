@@ -80,8 +80,9 @@ test("renderProjectStub: qwen-code n'a pas de template projet (hors scope v0.2)"
   await assert.rejects(() => renderProjectStub("qwen-code", null));
 });
 
-test("renderProjectStub: agy n'a pas de template projet (scope Home uniquement, ADR-0011)", async () => {
-  await assert.rejects(() => renderProjectStub("agy", null));
+test("renderProjectStub: agy a desormais un template projet (ADR-0013)", async () => {
+  const content = await renderProjectStub("agy", null);
+  assert.ok(content.includes("Antigravity CLI (agy)"));
 });
 
 test("renderProjectHookScript: relaie le contrat global et decouvre les skills dynamiquement", async () => {

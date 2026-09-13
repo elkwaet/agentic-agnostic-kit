@@ -5,6 +5,10 @@ et son injection au démarrage de session, sans jamais écraser silencieusement 
 
 **ATTENTION: C'est purement orienté CLI / Pour les plateforme d'assistant coding en Terminal** .
 
+## Prérequis
+
+- **Node.js** : Requiert strictement la version `>= 18.0.0`. Pour des performances et une compatibilité optimales, la dernière version LTS (ex: 20.x ou 22.x) est fortement recommandée.
+
 ## Installation
 
 Le paquet npm s'appelle `agentic-agnostic-kit` ; la commande installée s'appelle `agentic-agnostic` (raccourci, l'ancien nom `agentic-agnostic-kit` reste disponible en alias).

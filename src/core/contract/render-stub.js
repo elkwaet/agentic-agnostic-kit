@@ -20,6 +20,11 @@ const TEMPLATE_FILE_BY_AGENT = {
 const PROJECT_TEMPLATE_FILE_BY_AGENT = {
   "claude-code": "claude.CLAUDE.md.tpl",
   opencode: "opencode.AGENTS.md.tpl",
+  agy: "agy.GEMINI.md.tpl",
+  cursor: "cursor.cursorrules.tpl",
+  windsurf: "windsurf.windsurfrules.tpl",
+  cline: "cline.clinerules.tpl",
+  copilot: "copilot.copilot-instructions.md.tpl",
 };
 
 const BLOCK_ID = "stub-pointer";

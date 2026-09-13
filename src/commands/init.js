@@ -1,7 +1,8 @@
-import { chmod, access, readdir } from "node:fs/promises";
+import { chmod, access, readdir, lstat, rename, symlink, mkdir, rm } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import path from "node:path";
-import agentsMeta from "../constants/agents.json" with { type: "json" };
+import { readFileSync } from "node:fs";
+const agentsMeta = JSON.parse(readFileSync(new URL("../constants/agents.json", import.meta.url), "utf-8"));
 import { expandHome, kitStateDir } from "../core/paths.js";
 import { detectAllAgents } from "../core/detect-agents.js";
 import { computeOwnership } from "../core/fs-safety/ownership-marker.js";
@@ -97,6 +98,35 @@ async function manageProjectGraphify({ cwd, prompter, dryRun, yes, hasGraph, wir
         continue;
       }
       const res = await runGraphifyAction(action, { cwd, dryRun, logger: { run, skip } });
+      if (action.id === "wire-opencode" && res.ok && !dryRun) {
+        try {
+          const opencodeSkillPath = path.join(cwd, ".opencode", "skills", "graphify");
+          const agentsSkillDir = path.join(cwd, ".agents", "skills");
+          const agentsSkillPath = path.join(agentsSkillDir, "graphify");
+          const agentsSkillBakPath = path.join(agentsSkillDir, "graphify-bak");
+
+          const stat = await lstat(opencodeSkillPath).catch(() => null);
+          if (stat && stat.isDirectory() && !stat.isSymbolicLink()) {
+            await mkdir(agentsSkillDir, { recursive: true });
+
+            const agentsStat = await lstat(agentsSkillPath).catch(() => null);
+            if (agentsStat) {
+              const bakStat = await lstat(agentsSkillBakPath).catch(() => null);
+              if (bakStat) {
+                await rm(agentsSkillBakPath, { recursive: true, force: true });
+              }
+              await rename(agentsSkillPath, agentsSkillBakPath);
+            }
+
+            await rename(opencodeSkillPath, agentsSkillPath);
+            await symlink("../../.agents/skills/graphify", opencodeSkillPath, "junction");
+
+            console.log(note("Graphify skill centralized to .agents/skills/graphify and symlinked for OpenCode"));
+          }
+        } catch (err) {
+          console.log(warn(`Failed to centralize Graphify skill: ${err.message}`));
+        }
+      }
       if (action.id === "install-cli" && res.ok && !dryRun) {
         hasCli = await detectGraphifyCli();
       }
@@ -109,18 +139,30 @@ async function manageProjectGraphify({ cwd, prompter, dryRun, yes, hasGraph, wir
   }
 }
 
-async function warnIfHookToolsMissing() {
+async function selectHookEngine(prompter, yes) {
   const detected = await detectHookTools();
   const missing = missingHookTools(detected);
-  if (missing.length === 0) return;
-  console.log(
-    warn(
-      `Missing on PATH: ${missing.join(", ")} — the SessionStart hook needs them ` +
-        "and will silently fail at each session start until installed.",
-    ),
-  );
-  console.log(note(`macOS (brew):        brew install ${missing.join(" ")}`));
-  console.log(note(`Debian/Ubuntu (apt): sudo apt install ${missing.join(" ")}`));
+  
+  if (missing.length > 0) {
+    console.log(
+      warn(
+        `Missing on PATH: ${missing.join(", ")}. The Bash hook requires them.`
+      )
+    );
+    console.log(note("Defaulting to Node.js engine for the SessionStart hook (100% portable)."));
+    return "node";
+  }
+
+  if (yes) {
+    return "bash";
+  }
+
+  const choices = [
+    { label: "Bash (Recommended: ultra-fast ~5ms, uses local jq/awk)", value: "bash" },
+    { label: "Node.js (Portable: universal, slightly slower ~40ms)", value: "node" }
+  ];
+  const engine = await prompter.select("Which engine to use for the SessionStart hook?", choices, "bash");
+  return engine;
 }
 
 // v0.1 : agents a hook natif uniquement. OpenCode reporte en v0.2
@@ -143,12 +185,11 @@ const PROJECT_AGENT_IDS = ["claude-code"];
 // native de GEMINI.md confirmee, aucun mecanisme de hook confirme
 // fonctionnel a ce jour. Scope Home uniquement pour agy (pas d'entree
 // "project" dans agents.json) - cf. STUB_ONLY_PROJECT_AGENT_IDS.
-const STUB_ONLY_AGENT_IDS = ["opencode", "agy"];
+const STUB_ONLY_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
 
 // Sous-ensemble de STUB_ONLY_AGENT_IDS avec precedence project/Home
-// verifiee (ADR-0006). agy exclu : precedence jamais testee pour cet
-// agent, pas d'entree "project" dans agents.json pour l'instant.
-const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode"];
+// verifiee. agy est desormais inclus au scope Projet.
+const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
 
 function agentDisplayLabel(agentMeta) {
   return agentMeta.deprecatedSince
@@ -405,9 +446,10 @@ export async function runInit({
     // --- Script hook partage (uniquement si un agent a hook natif actif) --
     console.log(step("Câblage par agent"));
     if (activeAgents.length > 0) {
-      await warnIfHookToolsMissing();
-      const hookScriptPath = expandHome("~/.agents/hooks/session-start-contract.sh");
-      const hookProposed = await renderHookScript();
+      const engine = await selectHookEngine(prompter, yes);
+      const ext = engine === "node" ? "js" : "sh";
+      const hookScriptPath = expandHome(`~/.agents/hooks/session-start-contract.${ext}`);
+      const hookProposed = await renderHookScript(engine);
       const hookFileOp = await planFileOp({
         targetPath: hookScriptPath,
         proposedContent: hookProposed,
@@ -597,7 +639,7 @@ export async function runInitProject({
       const label = agentDisplayLabel(meta);
       console.log(d.installed ? ok(label) : skip(`${label} — not detected`));
     }
-    console.log(note("qwen-code / agy are out of the v0.2 Project scope"));
+    console.log(note("qwen-code is out of the v0.2 Project scope"));
 
     const hasGraphifyCli = await detectGraphifyCli();
     const hasGraph = await hasProjectGraph(cwd);
@@ -749,9 +791,10 @@ export async function runInitProject({
     // --- Script hook projet (uniquement si claude-code actif) ---
     console.log(step("Câblage par agent"));
     if (activeAgents.length > 0) {
-      await warnIfHookToolsMissing();
-      const hookScriptPath = path.join(cwd, ".agents", "hooks", "session-start-contract.sh");
-      const hookProposed = await renderProjectHookScript();
+      const engine = await selectHookEngine(prompter, yes);
+      const ext = engine === "node" ? "js" : "sh";
+      const hookScriptPath = path.join(cwd, ".agents", "hooks", `session-start-contract.${ext}`);
+      const hookProposed = await renderProjectHookScript(engine);
       const hookFileOp = await planFileOp({
         targetPath: hookScriptPath,
         proposedContent: hookProposed,

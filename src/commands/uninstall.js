@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import agentsMeta from "../constants/agents.json" with { type: "json" };
+import { readFileSync } from "node:fs";
+const agentsMeta = JSON.parse(readFileSync(new URL("../constants/agents.json", import.meta.url), "utf-8"));
 import { expandHome } from "../core/paths.js";
 import { removeMarkedBlock } from "../core/fs-safety/ownership-marker.js";
 import { planSessionStartRemoval, serializeJson } from "../core/fs-safety/json-merge.js";
@@ -10,10 +11,9 @@ import { formatFileOpPreview, formatSummary } from "../core/wizard/preview.js";
 
 const V01_AGENT_IDS = ["claude-code", "qwen-code"];
 const PROJECT_AGENT_IDS = ["claude-code"];
-// agy (Antigravity CLI) : scope Home uniquement (pas d'entree "project"
-// dans agents.json, precedence jamais verifiee) - cf. STUB_ONLY_PROJECT_AGENT_IDS.
-const STUB_ONLY_AGENT_IDS = ["opencode", "agy"];
-const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode"];
+// agy (Antigravity CLI) : Inclus en scope Home et Projet.
+const STUB_ONLY_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
+const STUB_ONLY_PROJECT_AGENT_IDS = ["opencode", "agy", "cursor", "windsurf", "cline", "copilot"];
 // gemini-cli retire des listes actives (ADR-0012 : arret officiel +
 // refus d'auth en usage reel, remplace par agy). Conserve ici uniquement
 // pour que les installations posees par une version anterieure du kit
