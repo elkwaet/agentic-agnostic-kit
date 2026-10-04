@@ -2,6 +2,13 @@
 
 Toutes les évolutions notables d'`agentic-agnostic-kit` sont consignées ici (format [Keep a Changelog](https://keepachangelog.com/), versioning [SemVer](https://semver.org/)).
 
+## [1.4.0] — 2026-10-04
+
+### Ajouté
+
+- Ajout de la commande `agentic-agnostic update` pour vérifier et installer les mises à jour de l'outil depuis npm.
+- Ajout de l'option `--version` (ou `-V`, `-v`) pour afficher la version actuelle de l'outil.
+
 ## [1.3.0] — 2026-09-13
 
 ### Ajouté

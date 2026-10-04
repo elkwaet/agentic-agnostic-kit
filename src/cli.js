@@ -1,9 +1,23 @@
 import { runInit } from "./commands/init.js";
 import { runDoctor } from "./commands/doctor.js";
 import { runUninstall } from "./commands/uninstall.js";
+import { runUpdate } from "./commands/update.js";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+function getVersion() {
+  const pkgUrl = new URL("../package.json", import.meta.url);
+  const pkg = JSON.parse(fs.readFileSync(fileURLToPath(pkgUrl), "utf-8"));
+  return pkg.version;
+}
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
+  
+  if (command === "--version" || command === "-V" || command === "-v") {
+    return { command: "version", flags: {} };
+  }
+
   const flags = { scope: "home", dryRun: false, yes: false, verbose: false, agentFilter: null };
   for (const arg of rest) {
     if (arg === "--dry-run") flags.dryRun = true;
@@ -30,13 +44,18 @@ function parseArgs(argv) {
 export async function main(argv = process.argv.slice(2)) {
   const { command, flags } = parseArgs(argv);
 
-  if (flags.scope !== "home" && flags.scope !== "project") {
-    console.error(`Invalid scope: "${flags.scope}" (expected: home | project)`);
-    process.exitCode = 1;
-    return;
+  if (command !== "version" && command !== "update" && command !== undefined && command !== "--help" && command !== "-h") {
+    if (flags.scope !== "home" && flags.scope !== "project") {
+      console.error(`Invalid scope: "${flags.scope}" (expected: home | project)`);
+      process.exitCode = 1;
+      return;
+    }
   }
 
   switch (command) {
+    case "version":
+      console.log(`v${getVersion()}`);
+      break;
     case "init":
       await runInit(flags);
       break;
@@ -45,6 +64,9 @@ export async function main(argv = process.argv.slice(2)) {
       break;
     case "uninstall":
       await runUninstall(flags);
+      break;
+    case "update":
+      await runUpdate(flags);
       break;
     case undefined:
     case "--help":
@@ -59,7 +81,7 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 function printHelp() {
-  console.log(`agentic-agnostic — v1.0 (alias: agentic-agnostic-kit)
+  console.log(`agentic-agnostic — v${getVersion()} (alias: agentic-agnostic-kit)
 
 Home scope    : Claude Code / Antigravity CLI (agy) / Qwen-code.
 Project scope : Claude Code only (project>Home precedence not verified for
@@ -71,6 +93,7 @@ Usage:
   agentic-agnostic init [--scope home|project] [--dry-run] [--yes] [--verbose] [--agent <id1,id2,...>]
   agentic-agnostic doctor [--scope home|project]
   agentic-agnostic uninstall [--scope home|project] [--dry-run] [--yes] [--verbose]
+  agentic-agnostic update [--yes]
 
 By default, each proposed change is shown as a short, plain-language
 status line. Pass --verbose (or -v) to also see the full line-by-line diff.
